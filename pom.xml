@@ -13,6 +13,7 @@
         <module>sty_netty</module>
         <module>sty_hadoop</module>
         <module>sty_scala</module>
+        <module>sty_spark</module>
     </modules>
 
     <properties>
