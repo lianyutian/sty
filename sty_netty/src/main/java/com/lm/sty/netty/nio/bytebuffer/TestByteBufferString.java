@@ -1,4 +1,4 @@
-package com.lm.sty.netty.bio.bytebuffer;
+package com.lm.sty.netty.nio.bytebuffer;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
