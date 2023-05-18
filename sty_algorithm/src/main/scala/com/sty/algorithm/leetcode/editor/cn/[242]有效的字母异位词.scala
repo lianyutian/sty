@@ -1,6 +1,5 @@
-import scala.collection.mutable
-
 //leetcode submit region begin(Prohibit modification and deletion)
+import scala.collection.mutable
 object Solution {
 
     def isAnagram(s: String, t: String): Boolean = {
