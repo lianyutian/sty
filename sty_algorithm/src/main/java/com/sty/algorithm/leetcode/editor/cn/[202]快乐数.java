@@ -2,7 +2,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class Solution202 {
+class Solution {
 
     public static void main(String[] args) {
         isHappy(3);

@@ -18,6 +18,7 @@
         <module>sty_net</module>
         <module>sty_concurrent</module>
         <module>sty_algorithm</module>
+        <module>sty_spark/spark_core</module>
     </modules>
 
     <properties>
