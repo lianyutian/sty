@@ -1,6 +1,6 @@
 //leetcode submit region begin(Prohibit modification and deletion)
 import scala.collection.mutable
-object Solution {
+object Solution349 {
   def intersection(nums1: Array[Int], nums2: Array[Int]): Array[Int] = {
     val map: mutable.Map[Int, Int] = mutable.HashMap()
 

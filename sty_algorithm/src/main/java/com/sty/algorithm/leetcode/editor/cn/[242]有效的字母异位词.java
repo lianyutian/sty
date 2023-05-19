@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class Solution {
+class Solution242 {
 
     public boolean isAnagram(String s, String t) {
         AtomicBoolean res = new AtomicBoolean(true);

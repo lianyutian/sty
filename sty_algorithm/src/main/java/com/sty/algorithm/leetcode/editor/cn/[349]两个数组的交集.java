@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class Solution {
+class Solution349 {
     public int[] intersection(int[] nums1, int[] nums2) {
 
         Set<Integer> set = new HashSet<>(nums1.length);
