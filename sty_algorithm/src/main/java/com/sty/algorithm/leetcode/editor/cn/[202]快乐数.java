@@ -1,8 +1,10 @@
+package com.sty.algorithm.leetcode.editor.cn;
+
 import java.util.HashSet;
 import java.util.Set;
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class Solution {
+class Solution202 {
 
     public static void main(String[] args) {
         isHappy(3);
