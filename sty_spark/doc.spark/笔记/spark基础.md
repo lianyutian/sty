@@ -240,4 +240,69 @@ RDD（Resilient Distributed Dataset）叫做弹性分布式数据集，是Spark�
   3 => [9,9]         4         9        3 => 无
   ```
 
-  
+
+
+
+### 转换算子
+
+#### value类型
+
+##### map
+
+1. 函数签名：
+
+   `def map[U: ClassTag](f: T=> U): RDD[U]`
+
+2. 功能说明：
+
+   参数 f 是一个函数，它可以接收一个参数。当某个RDD执行map方法时，会遍历该RDD中的每一个数据项，并依次应用 f 函数，从而产生一个新的RDD。即，这个新RDD中的每一个元素都是原来RDD中每一个元素依次应用 f 函数而得到的。
+
+3. 需求说明：
+
+   创建一个1-4数组的RDD，两个分区，将所有元素 *2 形成新的RDD
+
+   ![](E:\workspace\sty_project\sty\sty_spark\doc.spark\笔记\img\map.png)
+
+   ```scala
+   object value01_map {
+   
+       def main(args: Array[String]): Unit = {
+   
+           //1.创建SparkConf并设置App名称
+           val conf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+           //2.创建SparkContext，该对象是提交Spark App的入口
+           val sc = new SparkContext(conf)
+   
+           //3具体业务逻辑
+           // 3.1 创建一个RDD
+           val rdd: RDD[Int] = sc.makeRDD(1 to 4, 2)
+   
+           // 3.2 调用map方法，每个元素乘以2
+           val mapRdd: RDD[Int] = rdd.map(_ * 2)
+   
+           // 3.3 打印修改后的RDD中数据
+           mapRdd.collect().foreach(println)
+   
+           //4.关闭连接
+           sc.stop()
+       }
+   }
+   ```
+
+#####  mapPartitions
+
+1. 函数签名：
+
+   `def map[U: ClassTag](f: T=> U): RDD[U]`
+
+2. 功能说明：
+
+   参数 f 是一个函数，它可以接收一个参数。当某个RDD执行map方法时，会遍历该RDD中的每一个数据项，并依次应用 f 函数，从而产生一个新的RDD。即，这个新RDD中的每一个元素都是原来RDD中每一个元素依次应用 f 函数而得到的。
+
+### 行动算子
+
+
+
+
+
