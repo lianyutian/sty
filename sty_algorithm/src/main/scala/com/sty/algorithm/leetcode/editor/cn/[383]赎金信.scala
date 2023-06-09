@@ -2,7 +2,7 @@
 
 //leetcode submit region begin(Prohibit modification and deletion)
 import scala.collection.mutable
-object Solution {
+object Solution383 {
     def canConstruct(ransomNote: String, magazine: String): Boolean = {
         val map: mutable.Map[Char, Int] = new mutable.HashMap()
         for (elem <- magazine.toArray) {

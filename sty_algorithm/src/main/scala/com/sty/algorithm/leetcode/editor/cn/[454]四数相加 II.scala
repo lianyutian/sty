@@ -2,7 +2,7 @@
 import scala.collection.mutable
 
 
-object Solution {
+object Solution454 {
     def fourSumCount(nums1: Array[Int], nums2: Array[Int], nums3: Array[Int], nums4: Array[Int]): Int = {
         val map: mutable.HashMap[Int, Int] = mutable.HashMap()
         for (n1 <- nums1) {

@@ -1,6 +1,6 @@
 //leetcode submit region begin(Prohibit modification and deletion)
 import scala.collection.mutable
-object Solution {
+object Solution1 {
     // 导入包
     import scala.collection.mutable
 
