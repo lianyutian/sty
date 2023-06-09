@@ -251,7 +251,9 @@ RDD（Resilient Distributed Dataset）叫做弹性分布式数据集，是Spark�
 
 1. 函数签名：
 
-   `def map[U: ClassTag](f: T=> U): RDD[U]`
+   ```scala
+   def map[U: ClassTag](f: T=> U): RDD[U]
+   ```
 
 2. 功能说明：
 
@@ -261,7 +263,7 @@ RDD（Resilient Distributed Dataset）叫做弹性分布式数据集，是Spark�
 
    创建一个1-4数组的RDD，两个分区，将所有元素 *2 形成新的RDD
 
-   ![](E:\workspace\sty_project\sty\sty_spark\doc.spark\笔记\img\map.png)
+   ![](img\map.png)
 
    ```scala
    object value01_map {
@@ -294,11 +296,497 @@ RDD（Resilient Distributed Dataset）叫做弹性分布式数据集，是Spark�
 
 1. 函数签名：
 
-   `def map[U: ClassTag](f: T=> U): RDD[U]`
+   ```scala
+   def mapPartitions[U: ClassTag](
+       f: Iterator[T] => Iterator[U],
+       preservesPartitioning: Boolean = false): RDD[U]
+   ```
 
 2. 功能说明：
 
    参数 f 是一个函数，它可以接收一个参数。当某个RDD执行map方法时，会遍历该RDD中的每一个数据项，并依次应用 f 函数，从而产生一个新的RDD。即，这个新RDD中的每一个元素都是原来RDD中每一个元素依次应用 f 函数而得到的。
+
+3. 需求说明
+
+   创建一个RDD，4个元素，2个分区，使每个元素*2组成新的RDD
+
+   ![](img\mapPartitions.png)
+
+   ```scala
+   object value02_mapPartitions {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       // 3.1 创建一个RDD
+       val rdd: RDD[Int] = sc.makeRDD(1 to 4, 2)
+   
+       // 3.2 调用mapPartitions方法，每个元素乘以2
+       val rdd1: RDD[Int] = rdd.mapPartitions((x: Iterator[Int]) => x.map((_: Int) * 2))
+   
+       // 3.3 打印修改后的RDD中数据
+       rdd1.collect().foreach(println)
+       
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+**两者区别**
+
+1. map一次处理一个分区中的一个元素
+2. mapPartitions每次处理一个分区的数，这个分区的数据处理完成后，原RDD中分区的数据才能释放，可能导致OOM。
+
+开发经验：当内存较大的时候建议使用mapPartition，以提高处理效率。
+
+
+
+##### mapPartitionsWithIndex
+
+1. 函数签名
+
+   ```scala
+     def mapPartitionsWithIndex[U: ClassTag](
+         f: (Int, Iterator[T]) => Iterator[U],
+         preservesPartitioning: Boolean = false): RDD[U]
+   ```
+
+2. 功能说明
+
+   类似于mapPartitions，比mapPartitions多一个整数参数表示分区号
+
+3. 需求说明
+
+   创建一个RDD，使每个元素跟所在的分区号形成一个元组，组成一个新的RDD
+
+   ![](img\mapPartitionsWithIndex.png)
+
+   ```scala
+   object value03_mapPartitionsWithIndex {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       // 3.1 创建一个RDD
+       val rdd: RDD[Int] = sc.makeRDD(1 to 4, 2)
+   
+       // 3.2 创建一个RDD，使每个元素跟所在分区号形成一个元组，组成一个新的RDD
+       val indexRdd: RDD[(Int, Int)] = rdd.mapPartitionsWithIndex((index: Int, items: Iterator[Int]) => {
+         items.map((index, (_: Int)))
+       })
+   
+       // 3.3 打印修改后的RDD中数据
+       indexRdd.collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+   
+
+**flatMap**
+
+1. 函数签名
+
+   ```scala
+   def flatMap[U: ClassTag](f: T => TraversableOnce[U]): RDD[U]
+   ```
+
+2. 功能说明
+
+   与map操作类似，将RDD中的每一个元素通过应用f函数依次转换为新的元素，并封装到RDD中。
+
+   区别：在flatMap操作中，f函数的返回值是一个集合，并且会将每一个该集合中的元素拆分出来放到新的RDD中。
+
+3. 需求说明
+
+   创建一个集合，集合里面存储的还是子集合，把所有子集合中数据取出放入到一个大的集合中。
+
+   ![](img\flatMap.png)
+
+   ```scala
+   object value04_flatMap {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       // 3.1 创建一个RDD
+       val listRDD: RDD[List[Int]] = sc.makeRDD(List(List(1, 2), List(3, 4), List(5, 6), List(7)), 2)
+   
+       // 3.2 把所有子集合中数据取出放入到一个大的集合中
+       listRDD.flatMap((item: immutable.Seq[Int]) => item).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+
+
+##### groupBy
+
+1. 函数签名
+
+   ```scala
+   def groupBy[K](f: T => K)(implicit kt: ClassTag[K]): RDD[(K, Iterable[T])]
+   ```
+
+   - groupBy会存在shuffle过程
+   - shuffle：将不同的分区数据进行打乱重组的过程
+   - shuffle一定会落盘。可以在local模式下执行程序，通过4040看效果。
+
+2. 功能说明
+
+   分组，按照传入函数的返回值进行分组。将相同的key对应的值放入一个迭代器。
+
+3. 需求说明
+
+   创建一个RDD，按照元素模以2的值进行分组。
+
+   ![](img\groupBy.png)
+
+   ```scala
+   object value05_groupby {
+     def main(args: Array[String]): Unit = {
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       // 3.1 创建一个RDD
+       val rdd: RDD[Int] = sc.makeRDD(1 to 4, 2)
+   
+       // 3.2 将每个分区的数据放到一个数组并收集到Driver端打印
+       rdd.groupBy((_: Int) % 2).collect().foreach(println)
+   
+       // 3.3 创建一个RDD
+       val rdd1: RDD[String] = sc.makeRDD(List("hello", "hive", "hadoop", "spark", "scala"))
+   
+       // 3.4 按照首字母第一个单词相同分组
+       rdd1.groupBy((_: String).substring(0, 1)).collect().foreach(println)
+   
+       sc.stop()
+     }
+   }
+   ```
+
+
+
+##### **filter**
+
+1. 函数签名
+
+   ```scala
+   def filter(f: T => Boolean): RDD[T]
+   ```
+
+2. 功能说明
+
+   接收一个返回值为布尔类型的函数作为参数。当某个RDD调用filter方法时，会对该RDD中每一个元素应用f函数，如果返回值类型为true，则该元素会被添加到新的RDD中。
+
+3. 需求说明
+
+   创建一个RDD，过滤出对2取余等于0的数据。
+
+   ![](img\filter.png)
+
+   ```scala
+   object value06_filter {
+     def main(args: Array[String]): Unit = {
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3.创建一个RDD
+       val rdd: RDD[Int] = sc.makeRDD(Array(1, 2, 3, 4), 2)
+   
+       //3.1 过滤出符合条件的数据
+       val filterRdd: RDD[Int] = rdd.filter((_: Int) % 2 == 0)
+   
+       //3.2 收集并打印数据
+       filterRdd.collect().foreach(println)
+   
+       //4 关闭连接
+       sc.stop()
+     }
+   
+   }
+   ```
+
+
+
+##### **distinct**
+
+1. 函数签名
+
+   ```scala
+   def distinct(): RDD[T]
+   
+   // 对RDD采用多个Task去重，提高并发度
+   def distinct(numPartitions: Int)(implicit ord: Ordering[T] = null): RDD[T]
+   ```
+
+2. 功能说明
+
+   对内部元素去重，并将去重后的元素放入新的RDD中。
+
+3. 需求说明
+
+   创建一个RDD，对RDD中数据进行去重。
+
+   ```scala
+   object value07_distinct {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       // 3.1 创建一个RDD
+       val distinctRdd: RDD[Int] = sc.makeRDD(List(1, 2, 1, 5, 2, 9, 6, 1))
+   
+       // 3.2 打印去重后生成的新RDD
+       distinctRdd.distinct().collect().foreach(println)
+   
+       // 3.3 对RDD采用多个Task去重，提高并发度
+       distinctRdd.distinct(2).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+>
+>
+>注意：distinct过程存在shuffle
+
+
+
+##### **coalesce**
+
+Coalesce算子包括：配置执行Shuffle和配置不执行Shuffle两种方式。
+
+1. 函数签名
+
+   ```scala
+   // 默认shuffle = false 不执行shuffle
+   def coalesce(numPartitions: Int, shuffle: Boolean = false,
+                  partitionCoalescer: Option[PartitionCoalescer] = Option.empty)
+                 (implicit ord: Ordering[T] = null)
+         : RDD[T]
+   ```
+
+2. 功能说明
+
+   缩减分区数，用于大数据集过滤后，提高小数据集的执行效率。
+
+3. 需求说明
+
+   将4个分区合并为2个分区
+
+   ![](img\coalesce.png)
+
+   ```scala
+   object value08_coalesce {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3.创建一个RDD
+       //val rdd: RDD[Int] = sc.makeRDD(Array(1, 2, 3, 4), 4)
+   
+       //3.1 缩减分区
+       //val coalesceRdd: RDD[Int] = rdd.coalesce(2)
+   
+       //4. 创建一个RDD
+       val rdd: RDD[Int] = sc.makeRDD(Array(1, 2, 3, 4, 5, 6), 3)
+       //4.1 缩减分区-不执行shuffle
+       //val coalesceRDD: RDD[Int] = rdd.coalesce(2)
+       //4.2 执行shuffle
+       val coalesceRdd: RDD[Int] = rdd.coalesce(2, shuffle = true)
+   
+       //5 查看对应分区数据
+       val indexRDD: RDD[(Int, Int)] = rdd.mapPartitionsWithIndex(
+         (index: Int, datas: Iterator[Int]) => {
+           datas.map((index, _: Int))
+         }
+       )
+   
+       //6 打印数据
+       indexRDD.collect().foreach(println)
+   
+       //8 延迟一段时间，观察http://localhost:4040页面，查看Shuffle读写数据
+       Thread.sleep(100000)
+   
+       //7.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+
+
+##### **repartition**
+
+1. 函数签名
+
+   ```scala
+   def repartition(numPartitions: Int)(implicit ord: Ordering[T] = null): RDD[T]
+   ```
+
+2. 功能说明
+
+   该操作内部其实执行的是coalesce操作，参数shuffle的默认值为true。无论是将分区数多的RDD转换为分区数少的RDD，还是将分区数少的RDD转换为分区数多的RDD，repartition操作都可以完成，因为无论如何都会经shuffle过程。分区规则不是hash，因为平时使用的分区都是按照hash来实现的，repartition一般是对hash的结果不满意，想要打散重新分区。
+
+3. 与 coalesce 区别
+
+   - coalesce重新分区，可以选择是否进行shuffle过程。由参数shuffle: Boolean = false/true决定。
+
+   - repartition实际上是调用的coalesce，进行shuffle。
+
+     ```scala
+     def repartition(numPartitions: Int)(implicit ord: Ordering[T] = null): RDD[T] = withScope {
+         coalesce(numPartitions, shuffle = true)
+     }
+     ```
+
+   - **coalesce一般为缩减分区**，如果扩大分区，不使用shuffle是没有意义的，repartition扩大分区执行shuffle。
+
+4. 需求说明
+
+   创建一个4个分区的RDD，对其重新分区。
+
+   ![](img\repartition.png)
+
+   ```scala
+   object value09_repartition {
+     def main(args: Array[String]): Unit = {
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3. 创建一个RDD
+       val rdd: RDD[Int] = sc.makeRDD(Array(1, 2, 3, 4, 5, 6), 3)
+   
+       //3.1 缩减分区
+       //val coalesceRdd: RDD[Int] = rdd.coalesce(2, true)
+   
+       //3.2 重新分区
+       val repartitionRdd: RDD[Int] = rdd.repartition(2)
+   
+       //4 打印查看对应分区数据
+       val indexRdd: RDD[(Int, Int)] = repartitionRdd.mapPartitionsWithIndex(
+         (index: Int, datas: Iterator[Int]) => {
+           datas.map((index, _: Int))
+         }
+       )
+   
+       //5 打印
+       indexRdd.collect().foreach(println)
+   
+       //6. 关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+
+
+##### **sortBy**
+
+1. 函数签名
+
+   ```scala
+     def sortBy[K](
+         f: (T) => K,
+         ascending: Boolean = true,
+         numPartitions: Int = this.partitions.length)
+         (implicit ord: Ordering[K], ctag: ClassTag[K]): RDD[T]
+   ```
+
+2. 功能说明
+
+   该操作用于排序数据。在排序之前，可以将数据通过f函数进行处理，之后按照f函数处理的结果进行排序，默认为正序排列。排序后新产生的RDD的分区数与原RDD的分区数一致。
+
+3. 需求说明
+
+   创建一个RDD，按照数字大小分别实现正序和倒序排序。
+
+   ![](img\sortBy.png)
+
+   ```scala
+   object value10_sortBy {
+     def main(args: Array[String]): Unit = {
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       // 3.1 创建一个RDD
+       val rdd: RDD[Int] = sc.makeRDD(List(2, 1, 3, 4, 6, 5))
+   
+       // 3.2 默认是升序排
+       val sortRdd: RDD[Int] = rdd.sortBy((num: Int) => num)
+       sortRdd.collect().foreach(println)
+   
+       // 3.3 配置为倒序排
+       val sortRdd2: RDD[Int] = rdd.sortBy((num: Int) => num, ascending = false)
+       sortRdd2.collect().foreach(println)
+   
+       // 3.4 创建一个RDD
+       val strRdd: RDD[String] = sc.makeRDD(List("1", "22", "12", "2", "3"))
+   
+       // 3.5 按照字符的int值排序
+       strRdd.sortBy((num: String) => num.toInt).collect().foreach(println)
+   
+       // 3.5 创建一个RDD
+       val rdd3: RDD[(Int, Int)] = sc.makeRDD(List((2, 1), (1, 2), (1, 1), (2, 2)))
+   
+       // 3.6 先按照tuple的第一个值排序，相等再按照第2个值排
+       rdd3.sortBy((t: (Int, Int)) => t).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+   
 
 ### 行动算子
 

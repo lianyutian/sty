@@ -1,4 +1,4 @@
-package com.lm.sty.spark.rdd.create
+package com.lm.sty.spark.create
 
 import org.apache.spark.{SparkConf, SparkContext}
 
