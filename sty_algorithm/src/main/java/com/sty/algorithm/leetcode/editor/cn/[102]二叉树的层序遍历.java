@@ -1,9 +1,10 @@
 package com.sty.algorithm.leetcode.editor.cn;
 //leetcode submit region begin(Prohibit modification and deletion)
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Definition for a binary tree node.
@@ -20,21 +21,33 @@ import java.util.List;
  * }
  * }
  */
-class Solution94 {
-    public List<Integer> inorderTraversal(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
-        inorder(root, list);
-        return list;
-    }
-
-    public void inorder(TreeNode root, List<Integer> list) {
+class Solution102 {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
         if (root == null) {
-            return;
+            return res;
         }
-        inorder(root.left, list);
-        list.add(root.val);
-        inorder(root.right, list);
+        Queue<TreeNode> queue = new ArrayDeque<>();
+        queue.offer(root);
+        while (!queue.isEmpty()) {
+            List<Integer> list = new ArrayList<>();
+            int len = queue.size();
+            for (int i = 0; i < len; i++) {
+                TreeNode node = queue.poll();
+                list.add(node.val);
+                if (node.left != null) {
+                    queue.offer(node.left);
+                }
+                if (node.right != null) {
+                    queue.offer(node.right);
+                }
+            }
 
+            res.add(list);
+
+        }
+
+        return res;
     }
 
     public class TreeNode {
