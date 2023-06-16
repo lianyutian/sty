@@ -21,7 +21,7 @@ import java.util.Queue;
  * }
  * }
  */
-class Solution {
+class Solution515 {
     public List<Integer> largestValues(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) {

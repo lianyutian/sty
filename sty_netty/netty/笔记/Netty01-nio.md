@@ -1053,31 +1053,54 @@ System.out.println(end - start);
 服务器端
 
 ```java
-// 使用 nio 来理解阻塞模式, 单线程
-// 0. ByteBuffer
-ByteBuffer buffer = ByteBuffer.allocate(16);
-// 1. 创建了服务器
-ServerSocketChannel ssc = ServerSocketChannel.open();
+/**
+ * 阻塞模式服务
+ */
+@Slf4j
+public class Server {
+    public static void main(String[] args) throws IOException {
+        // 1. 使用 nio 来理解阻塞模式，单线程
+        ByteBuffer buffer = ByteBuffer.allocate(16);
 
-// 2. 绑定监听端口
-ssc.bind(new InetSocketAddress(8080));
+        // 2. 创建服务器
+        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
 
-// 3. 连接集合
-List<SocketChannel> channels = new ArrayList<>();
-while (true) {
-    // 4. accept 建立与客户端连接， SocketChannel 用来与客户端之间通信
-    log.debug("connecting...");
-    SocketChannel sc = ssc.accept(); // 阻塞方法，线程停止运行
-    log.debug("connected... {}", sc);
-    channels.add(sc);
-    for (SocketChannel channel : channels) {
-        // 5. 接收客户端发送的数据
-        log.debug("before read... {}", channel);
-        channel.read(buffer); // 阻塞方法，线程停止运行
-        buffer.flip();
-        debugRead(buffer);
-        buffer.clear();
-        log.debug("after read...{}", channel);
+        // 3. 绑定监听端口
+        serverSocketChannel.bind(new InetSocketAddress(8080));
+
+        // 4. 连接集合
+        List<SocketChannel> channelList = new ArrayList<>();
+
+        while (true) {
+
+            // 5. accept 建立与客户端连接，SocketChannel 用来与客户端之间通信
+            log.debug("connecting...");
+
+            // 阻塞方法，线程停止运行
+            SocketChannel socketChannel = serverSocketChannel.accept();
+
+            log.debug("connected.. {}", socketChannel);
+
+            channelList.add(socketChannel);
+
+            for (SocketChannel channel : channelList) {
+
+                // 6. 接收客户端发送的数据
+                log.debug("before read... {}", channel);
+
+                // 阻塞方法，线程停止运行
+                channel.read(buffer);
+
+                buffer.flip();
+
+                debugRead(buffer);
+
+                buffer.clear();
+
+                log.debug("after read... {}", channel);
+            }
+
+        }
     }
 }
 ```
@@ -1089,6 +1112,8 @@ SocketChannel sc = SocketChannel.open();
 sc.connect(new InetSocketAddress("localhost", 8080));
 System.out.println("waiting...");
 ```
+
+> 此时因为是单线程ServerSocketChannel接收一个连接后会一直等待在第一个客户端输入，不会处理第二个客户端得连接请求
 
 
 
@@ -1106,36 +1131,66 @@ System.out.println("waiting...");
 服务器端，客户端代码不变
 
 ```java
-// 使用 nio 来理解非阻塞模式, 单线程
-// 0. ByteBuffer
-ByteBuffer buffer = ByteBuffer.allocate(16);
-// 1. 创建了服务器
-ServerSocketChannel ssc = ServerSocketChannel.open();
-ssc.configureBlocking(false); // 非阻塞模式
-// 2. 绑定监听端口
-ssc.bind(new InetSocketAddress(8080));
-// 3. 连接集合
-List<SocketChannel> channels = new ArrayList<>();
-while (true) {
-    // 4. accept 建立与客户端连接， SocketChannel 用来与客户端之间通信
-    SocketChannel sc = ssc.accept(); // 非阻塞，线程还会继续运行，如果没有连接建立，但sc是null
-    if (sc != null) {
-        log.debug("connected... {}", sc);
-        sc.configureBlocking(false); // 非阻塞模式
-        channels.add(sc);
-    }
-    for (SocketChannel channel : channels) {
-        // 5. 接收客户端发送的数据
-        int read = channel.read(buffer);// 非阻塞，线程仍然会继续运行，如果没有读到数据，read 返回 0
-        if (read > 0) {
-            buffer.flip();
-            debugRead(buffer);
-            buffer.clear();
-            log.debug("after read...{}", channel);
+@Slf4j
+public class Server2 {
+
+    public static void main(String[] args) throws IOException {
+
+        // 1. 使用 nio 来理解阻塞模式，单线程
+        ByteBuffer buffer = ByteBuffer.allocate(16);
+
+        // 2. 创建服务器
+        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+
+        // 设置非阻塞模式（影响 serverSocketChannel.accept()方法，设置后该方法为非阻塞）
+        serverSocketChannel.configureBlocking(false);
+
+        // 3. 绑定监听端口
+        serverSocketChannel.bind(new InetSocketAddress(8080));
+
+        // 4. 连接集合
+        List<SocketChannel> channelList = new ArrayList<>();
+
+        while (true) {
+
+            // 5. accept 建立与客户端连接，SocketChannel 用来与客户端之间通信
+            // log.debug("connecting...");
+
+            // 此时该方法为非阻塞方法,线程还会继续运行，如果没有连接建立，sc是null
+            SocketChannel socketChannel = serverSocketChannel.accept();
+
+            if (socketChannel != null) {
+                log.debug("connected.. {}", socketChannel);
+                // 设置非阻塞（影响 channel.read()方法，设置后该方法为非阻塞）
+                socketChannel.configureBlocking(false);
+                channelList.add(socketChannel);
+            }
+
+            for (SocketChannel channel : channelList) {
+
+                // 6. 接收客户端发送的数据
+                // log.debug("before read... {}", channel);
+
+                // 设置后非阻塞方法，线程继续运行，如果没有读取到数据，read返回0
+                int read = channel.read(buffer);
+
+                if (read > 0) {
+                    buffer.flip();
+
+                    debugRead(buffer);
+
+                    buffer.clear();
+
+                    log.debug("after read... {}", channel);
+                }
+            }
         }
     }
 }
+
 ```
+
+>此时服务端线程会一直运行监听客户端请求，如果客户端没有请求会导致CPU空转
 
 
 
@@ -1310,6 +1365,48 @@ public class ChannelDemo6 {
 ```
 
 
+
+**不处理accept事件**
+
+服务端代码
+
+```java
+@Slf4j
+public class Server3 {
+    public static void main(String[] args) throws IOException {
+
+        ServerSocketChannel ssc = ServerSocketChannel.open();
+
+        ssc.configureBlocking(false);
+
+        ssc.bind(new InetSocketAddress(8080));
+
+        Selector selector = Selector.open();
+
+        ssc.register(selector, SelectionKey.OP_ACCEPT);
+
+        while (true) {
+
+            // 阻塞在该方法上
+            int count = selector.select();
+
+            log.debug("select count: {}", count);
+
+            Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+
+            while (iterator.hasNext()) {
+
+                SelectionKey key = iterator.next();
+
+                log.debug("key {}", key);
+            }
+        }
+    }
+}
+
+```
+
+![](img\不处理事件.png)
 
 #### 💡 事件发生后能否不处理
 
@@ -1497,6 +1594,55 @@ b2 ->> b2: 01234567890abcdef3333\r
 ```
 
 服务器端
+
+**场景：消息边界**
+
+##### 处理边界信息
+
+```java
+private static void split(ByteBuffer source) {
+    source.flip();
+    for (int i = 0; i < source.limit(); i++) {
+        // 找到一条完整消息
+        if (source.get(i) == '\n') {
+            int length = i + 1 - source.position();
+            // 把这条完整消息存入新的 ByteBuffer
+            ByteBuffer target = ByteBuffer.allocate(length);
+            // 从 source 读，向 target 写
+            for (int j = 0; j < length; j++) {
+                target.put(source.get());
+            }
+            debugAll(target);
+        }
+    }
+    source.compact(); // 0123456789abcdef  position 16 limit 16
+}
+```
+
+
+
+**场景：客户端发送消息超过server端buffer容量**
+
+##### 附件&扩容
+
+```java
+ServerSocketChannel channel = (ServerSocketChannel) key.channel();
+SocketChannel sc = channel.accept();
+sc.configureBlocking(false);
+ByteBuffer buffer = ByteBuffer.allocate(16); // attachment
+// 将一个 byteBuffer 作为附件关联到 selectionKey 上
+SelectionKey scKey = sc.register(selector, 0, buffer);
+
+// 需要扩容
+if (buffer.position() == buffer.limit()) {
+   ByteBuffer newBuffer = ByteBuffer.allocate(buffer.capacity() * 2);
+   buffer.flip();
+   newBuffer.put(buffer); // 0123456789abcdef3333\n
+   key.attach(newBuffer);
+}
+```
+
+**完整代码**
 
 ```java
 private static void split(ByteBuffer source) {
@@ -1712,14 +1858,6 @@ public class WriteClient {
 #### 💡 write 为何要取消
 
 只要向 channel 发送数据时，socket 缓冲可写，这个事件会频繁触发，因此应当只在 socket 缓冲区写不下时再关注可写事件，数据写完之后再取消关注
-
-
-
-
-
-
-
-
 
 
 

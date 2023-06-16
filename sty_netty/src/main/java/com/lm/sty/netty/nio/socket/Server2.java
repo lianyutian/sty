@@ -44,7 +44,7 @@ public class Server2 {
             // 5. accept 建立与客户端连接，SocketChannel 用来与客户端之间通信
             // log.debug("connecting...");
 
-            // 此时该方法为非阻塞方法
+            // 此时该方法为非阻塞方法,线程还会继续运行，如果没有连接建立，sc是null
             SocketChannel socketChannel = serverSocketChannel.accept();
 
             if (socketChannel != null) {

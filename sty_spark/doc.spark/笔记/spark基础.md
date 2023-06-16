@@ -786,6 +786,359 @@ Coalesce算子包括：配置执行Shuffle和配置不执行Shuffle两种方式�
    }
    ```
 
+
+
+
+#### **双Value类型**
+
+##### intersection
+
+1. 函数签名
+
+   ```scala
+   def intersection(other: RDD[T]): RDD[T]
+   ```
+
+2. 功能说明
+
+   对源RDD和参数RDD求交集后返回一个新的RDD
+
+3. 需求说明
+
+   创建两个RDD，求两个RDD的交集。
+
+   ![](img\intersection.png)
+
+   ```scala
+   object DoubleValue01_intersection {
+     def main(args: Array[String]): Unit = {
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd1: RDD[Int] = sc.makeRDD(1 to 4)
+   
+       //3.2 创建第二个RDD
+       val rdd2: RDD[Int] = sc.makeRDD(4 to 8)
+   
+       //3.3 计算第一个RDD与第二个RDD的交集并打印
+       // 利用shuffle的原理进行求交集  需要将所有的数据落盘shuffle 效率很低  不推荐使用
+       rdd1.intersection(rdd2).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+
+
+##### union
+
+1. 函数签名
+
+   ```scala
+   def union(other: RDD[T]): RDD[T]
+   ```
+
+2. 功能说明
+
+   对源RDD和参数RDD求并集后返回一个新的RDD
+
+3. 需求说明
+
+   创建两个RDD，求并集
+
+   ![](img\union.png)
+
+   ```scala
+   object DoubleValue02_union {
+     def main(args: Array[String]): Unit = {
+       val conf : SPark
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd1: RDD[Int] = sc.makeRDD(1 to 4)
+   
+       //3.2 创建第二个RDD
+       val rdd2: RDD[Int] = sc.makeRDD(4 to 8)
+   
+       //3.3 计算两个RDD的并集
+       // 将原先的RDD的分区和数据都保持不变  简单的将多个分区合并在一起 放到一个RDD中
+       // 由于不走shuffle  效率高  所以会使用到
+       rdd1.union(rdd2).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   
+   ```
+
+
+
+##### subtract
+
+1. 函数签名
+
+   ```scala
+   def subtract(other: RDD[T]): RDD[T]
+   ```
+
+2. 功能说明
+
+   计算差的一种函数，去除两个RDD中相同元素，不同的RDD将保留下来
+
+3. 需求说明
+
+   创建两个RDD，求第一个RDD与第二个RDD的差集
+
+   ```scala
+   object DoubleValue03_subtract {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd: RDD[Int] = sc.makeRDD(1 to 4)
+   
+       //3.2 创建第二个RDD
+       val rdd1: RDD[Int] = sc.makeRDD(4 to 8)
+   
+       //3.3 计算第一个RDD与第二个RDD的差集并打印
+       // 同样使用shuffle的原理  将两个RDD的数据写入到相同的位置 进行求差集
+       // 需要走shuffle  效率低  不推荐使用
+       rdd.subtract(rdd1).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   
+   }
+   ```
+
+
+
+##### zip拉链
+
+1. 函数签名
+
+2. 功能说明
+
+3. 需求说明
+
+   创建两个RDD，并将两个RDD组合到一起形成一个(k,v)RDD
+
+   ![](img\zip.png)
+
+   ```scala
+   object DoubleValue04_zip {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd1: RDD[Int] = sc.makeRDD(Array(1, 2, 3), 3)
+   
+       //3.2 创建第二个RDD
+       val rdd2: RDD[String] = sc.makeRDD(Array("a", "b", "c"), 3)
+   
+       //3.3 第一个RDD组合第二个RDD并打印
+       rdd1.zip(rdd2).collect().foreach(println)
+   
+       //3.4 第二个RDD组合第一个RDD并打印
+       rdd2.zip(rdd1).collect().foreach(println)
+   
+       //3.5 创建第三个RDD（与1，2分区数不同）
+       val rdd3: RDD[String] = sc.makeRDD(Array("a", "b"), 3)
+   
+       //3.6 元素个数不同，不能拉链
+       // Can only zip RDDs with same number of elements in each partition
+       rdd1.zip(rdd3).collect().foreach(println)
+   
+       //3.7 创建第四个RDD（与1，2分区数不同）
+       val rdd4: RDD[String] = sc.makeRDD(Array("a", "b", "c"), 2)
+   
+       //3.8 分区数不同，不能拉链
+       // Can't zip RDDs with unequal numbers of partitions: List(3, 2)
+       rdd1.zip(rdd4).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+
+
+#### Key-Value类型
+
+##### partitionBy**按照K重新分区**
+
+1. 函数签名
+
+   ```scala
+   def partitionBy(partitioner: Partitioner): RDD[(K, V)]
+   ```
+
+2. 功能说明
+
+   将RDD[K,V]中的K按照指定Partitioner重新进行分区；
+
+   如果原有的RDD和新的RDD是一致的话就不进行分区，否则会产生Shuffle过程。
+
+3. 需求说明
+
+   创建一个3个分区的RDD，对其重新分区
+
+   ![](img\partitionBy.png)
+
+   ```scala
+   object KeyValue01_partitionBy {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd: RDD[(Int, String)] = sc.makeRDD(Array((1, "aaa"), (2, "bbb"), (3, "ccc")), 3)
+   
+       //3.2 对RDD重新分区
+       val rdd2: RDD[(Int, String)] = rdd.partitionBy(new HashPartitioner(2))
+   
+       //3.3 打印查看对应分区数据  (0,(2,bbb))  (1,(1,aaa))  (1,(3,ccc))
+       val indexRdd: RDD[(Int, (Int, String))] = rdd2.mapPartitionsWithIndex(
+         (index: Int, datas: Iterator[(Int, String)]) => datas.map((index, (_: (Int, String))))
+       )
+       indexRdd.collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+
+
+#####  groupByKey
+
+1. 函数签名
+
+   ```scala
+   def groupByKey(): RDD[(K, Iterable[V])]
+   ```
+
+2. 功能说明
+
+   groupByKey对每个key进行操作，但只生成一个seq，并不进行聚合。
+
+   该操作可以指定分区器或者分区数（默认使用HashPartitioner）
+
+3. 需求说明
+
+   统计单词出现次数
+
+   ![](img\groupByKey.png)
+
+   ```scala
+   object KeyValue03_groupByKey {
+   
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd = sc.makeRDD(List(("a", 1), ("b", 5), ("a", 5), ("b", 2)))
+   
+       //3.2 将相同key对应值聚合到一个Seq中
+       val group: RDD[(String, Iterable[Int])] = rdd.groupByKey()
+   
+       //3.3 打印结果
+       group.collect().foreach(println)
+   
+       //3.4 计算相同key对应值的相加结果
+       group.map(t => (t._1, t._2.sum)).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+   
+
+##### reduceByKey
+
+1. 函数签名
+
+   ```scala
+   def reduceByKey(partitioner: Partitioner, func: (V, V) => V): RDD[(K, V)]
+   ```
+
+2. 功能说明
+
+   该操作可以将RDD[K,V]中的元素按照相同的K对V进行聚合。其存在多种重载形式，还可以设置新RDD的分区数。
+
+3. 需求说明
+
+   统计单词出现次数
+
+   ![](img\reduceByKey.png)
+
+   ```scala
+   object KeyValue02_reduceByKey {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd = sc.makeRDD(List(("a", 1), ("b", 5), ("a", 5), ("b", 2)))
+   
+       //3.2 计算相同key对应值的相加结果
+       val reduce: RDD[(String, Int)] = rdd.reduceByKey((v1, v2) => v1 + v2)
+   
+       //3.3 打印结果
+       reduce.collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
    
 
 ### 行动算子
