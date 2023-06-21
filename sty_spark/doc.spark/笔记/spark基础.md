@@ -1139,9 +1139,363 @@ Coalesce算子包括：配置执行Shuffle和配置不执行Shuffle两种方式�
    }
    ```
 
+
+
+
+**reduceByKey和groupByKey的区别**
+
+1. reduceBykey：按照 **key** 进行聚合，在 **shuffle** 之前有 **combine**（预聚合）操作，返回结果是 **RDD[K,V]**
+2. groupByKey：按照 **key** 进行分组，直接进行 **shuffle**
+
+在不影响业务逻辑的前提下，优先使用 reduceByKey。求和操作不影响业务逻辑，求平均值影响业务逻辑，后续会学习功能更加强大的归约算子，能够在预聚合的情况下实现求平均值。
+
+
+
+##### aggregateByKey
+
+1. 函数签名
+
+   ```scala
+   def aggregateByKey[U: ClassTag](zeroValue: U, partitioner: Partitioner)(seqOp: (U, V) => U,
+         combOp: (U, U) => U): RDD[(K, U)]
+   ```
+
+   1. zeroValue(初始值)：给每一个分区中的每一种key一个初始值。
+   2. seqOp(分区内)：函数用于在每一个分区中用初始值逐步迭代value。
+   3. combOp(分区间)：函数用于合并每个分区中的结果。
+
+2. 功能说明
+
+   分区内和分区间逻辑不同的归约。
+
+3. 需求说明
+
+   取出每个分区相同key对应值的最大值，然后相加。
+
+   ![](img\aggregateByKey.png)
+
+   ```scala
+   object KeyValue04_aggregateByKey {
+     def main(args: Array[String]): Unit = {
    
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd: RDD[(String, Int)] = sc.makeRDD(List(("a",1),("a",3),("a",5),("b",7),("b",2),("b",4),("b",6),("a",7)), 2)
+   
+       //3.2 取出每个分区相同key对应值的最大值，然后相加
+       rdd.aggregateByKey(0)(math.max, (_: Int) + (_: Int)).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+
+
+##### sortByKey
+
+1. 函数签名
+
+   ```scala
+   def sortByKey(ascending: Boolean = true, numPartitions: Int = self.partitions.length) : RDD[(K, V)]
+   
+   ascending: Boolean = true 默认升序
+   ```
+
+2. 功能说明
+
+   在一个(K,V)的RDD上调用，K必须实现Ordered接口，返回一个按照key进行排序的(K,V)的RDD。
+
+3. 需求说明
+
+   创建一个pairRDD，按照key的正序和倒序进行排序。
+
+   ![](img\sortBy.png)
+
+   ```scala
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd: RDD[(Int, String)] = sc.makeRDD(Array((3, "aa"), (6, "cc"), (2, "bb"), (1, "dd")))
+   
+       //3.2 按照key的正序（默认顺序）
+       rdd.sortByKey(true).collect().foreach(println)
+   
+       //3.3 按照key的倒序
+       rdd.sortByKey(false).collect().foreach(println)
+       // 只会按照key来排序  最终的结果是key有序  value不会排序
+       // spark的排序是全局有序  不会进行hash shuffle处理
+       // 使用range分区器
+       // new RangePartitioner(numPartitions, self, ascending)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   ```
+
+
+
+#####  mapValues
+
+1. 函数签名
+
+   ```scala
+   def mapValues[U](f: V => U): RDD[(K, U)]
+   ```
+
+2. 功能说明
+
+   针对于(K,V)形式的类型只对V进行操作。
+
+3. 需求说明
+
+   创建一个pairRDD，并将value添加字符串"|||"。
+
+   ![](img\mapValues.png)
+
+   ```scala
+   object KeyValue08_mapValues {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd: RDD[(Int, String)] = sc.makeRDD(Array((1, "a"), (1, "d"), (2, "b"), (3, "c")))
+   
+       //3.2 对value添加字符串"|||"
+       rdd.mapValues((_: String) + "|||").collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+
+
+##### join
+
+1. 函数签名
+
+   ```scala
+   def join[W](other: RDD[(K, W)], partitioner: Partitioner): RDD[(K, (V, W))]
+   ```
+
+2. 功能说明
+
+   在类型为(K,V)和(K,W)的RDD上调用，返回一个相同key对应的所有元素对在一起的(K,(V,W))的RDD。
+
+   **等同于sql里的内连接,关联上的要,关联不上的舍弃**
+
+3. 需求说明
+
+   创建两个pairRDD，并将key相同的数据聚合到一个元组。
+   ![](img\join.png)
+
+   ```scala
+   object KeyValue09_join {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd: RDD[(Int, String)] = sc.makeRDD(Array((1, "a"), (2, "b"), (3, "c")))
+   
+       //3.2 创建第二个pairRDD
+       val rdd1: RDD[(Int, Int)] = sc.makeRDD(Array((1, 4), (2, 5), (4, 6)))
+   
+       //3.3 join操作并打印结果
+       rdd.join(rdd1).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   
+   ```
+
+
+
+##### cogroup
+
+1. 函数签名
+
+   ```scala
+     def cogroup[W1, W2, W3](other1: RDD[(K, W1)],
+         other2: RDD[(K, W2)],
+         other3: RDD[(K, W3)],
+         partitioner: Partitioner)
+         : RDD[(K, (Iterable[V], Iterable[W1], Iterable[W2], Iterable[W3]))]
+   ```
+
+2. 功能说明
+
+   在类型为(K,V)和(K,W)的RDD上调用，返回一个(K,(Iterable<V>,Iterable<W>))类型的RDD。
+
+   操作两个RDD中的KV元素，每个RDD中相同key中的元素分别聚合成一个集合。
+
+   **类似于sql的全连接，但是在同一个RDD中对key聚合**
+
+3. 需求说明
+
+   创建两个pairRDD，并将key相同的数据聚合到一个迭代器。
+
+   ![](img\cogroup.png)
+
+   ```scala
+   object KeyValue10_cogroup {
+     def main(args: Array[String]): Unit = {
+   
+       //1.创建SparkConf并设置App名称
+       val conf: SparkConf = new SparkConf().setAppName("SparkCoreTest").setMaster("local[*]")
+   
+       //2.创建SparkContext，该对象是提交Spark App的入口
+       val sc: SparkContext = new SparkContext(conf)
+   
+       //3具体业务逻辑
+       //3.1 创建第一个RDD
+       val rdd: RDD[(Int, String)] = sc.makeRDD(Array((1, "a"), (2, "b"), (3, "c")))
+   
+       //3.2 创建第二个RDD
+       val rdd1: RDD[(Int, Int)] = sc.makeRDD(Array((1, 4), (2, 5), (4, 6)))
+   
+       //3.3 cogroup两个RDD并打印结果
+       // (1,(CompactBuffer(a),CompactBuffer(4)))
+       // (2,(CompactBuffer(b),CompactBuffer(5)))
+       // (3,(CompactBuffer(c),CompactBuffer()))
+       // (4,(CompactBuffer(),CompactBuffer(6)))
+       rdd.cogroup(rdd1).collect().foreach(println)
+   
+       //4.关闭连接
+       sc.stop()
+     }
+   }
+   ```
+
+
+
+#### 实例
+
+需求：统计出每一个省份广告被点击次数的Top3
+
+ [agent.log](..\..\datas\agent\agent.log) 
+
+![](img\top3.png)
+
+```scala
+object Test01_DemoTop3 {
+  def main(args: Array[String]): Unit = {
+    // 1. 创建配置对象
+    val conf: SparkConf = new SparkConf().setAppName("coreTest").setMaster("local[*]")
+
+    // 2. 创建sc
+    val sc = new SparkContext(conf)
+
+    // 3. 编写代码  执行操作
+    val lineRDD: RDD[String] = sc.textFile("sty_spark/datas/agent/agent.log")
+
+    // 步骤一: 过滤出需要的数据
+    val tupleRDD: RDD[(String, String)] = lineRDD.map((line: String) => {
+      val data: Array[String] = line.split(" ")
+      (data(1), data(4))
+    })
+    // 将一行的数据转换为(省份,广告)
+    //    tupleRDD.collect().foreach(println)
+
+    // 步骤二: 对省份加广告进行wordCount 统计
+    val provinceCountRDD: RDD[((String, String), Int)] = tupleRDD.map(((_: (String, String)), 1)).reduceByKey((_: Int) + (_: Int))
+
+
+    // 一步进行过滤数据加wordCount
+    val tupleRDD1: RDD[((String, String), Int)] = lineRDD.map((line: String) => {
+      val data: Array[String] = line.split(" ")
+      ((data(1), data(4)), 1)
+    })
+
+    val provinceCountRDD1: RDD[((String, String), Int)] = tupleRDD1.reduceByKey((_: Int) + (_: Int))
+
+    // 统计单个省份单条广告点击的次数  ((省份,广告id),count次数)
+    //    provinceCountRDD.collect().foreach(println)
+
+    // 步骤三:分省份进行聚合
+    // ((省份,广告id),count次数)
+    // 使用groupBY的方法 数据在后面会有省份的冗余
+    //    val provinceRDD: RDD[(String, Iterable[((String, String), Int)])] = provinceCountRDD1.groupBy(tuple => tuple._1._1)
+    //    provinceRDD.collect().foreach(println)
+
+    // 推荐使用groupByKey   => 前面已经聚合过了
+    // ((省份,广告id),count次数) => (省份,(广告id,count次数))
+
+    // 使用匿名函数的写法
+    val value: RDD[(String, (String, Int))] = provinceCountRDD1.map((tuple: ((String, String), Int)) =>
+      (tuple._1._1, (tuple._1._2, tuple._2)))
+
+    // 偏函数的写法
+    provinceCountRDD1.map({
+      case ((province, id), count) => (province, (id, count))
+    })
+
+    val provinceRDD1: RDD[(String, Iterable[(String, Int)])] = value.groupByKey()
+
+    // (省份,(广告id,count次数)) => (省份,List((广告1,次数),(广告2,次数),(广告3,次数)))
+    //    provinceRDD1.collect().foreach(println)
+
+    //步骤四: 对单个二元组中的value值排序取top3
+    // 相当于只需要对value进行处理
+    val result: RDD[(String, List[(String, Int)])] = provinceRDD1.mapValues((it: Iterable[(String, Int)]) => {
+      // 将list中的广告加次数排序取top3即可
+      val list1: List[(String, Int)] = it.toList
+
+      // 此处调用的sort是集合常用函数
+      // 对rdd调用的是算子  对list调用的是集合常用函数
+      list1.sortWith((_: (String, Int))._2 > (_: (String, Int))._2).take(3)
+    })
+
+    result.collect().foreach(println)
+
+    Thread.sleep(60000)
+
+    // 4. 关闭sc
+    sc.stop()
+  }
+}
+```
+
+
 
 ### 行动算子
+
+行动算子是触发了整个作业的执行。因为转换算子都是懒加载，并不会立即执行。
+
+#### collect
+
+1. 函数签名
+2. 功能说明
+3. 需求说明
 
 
 
