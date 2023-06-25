@@ -43,7 +43,7 @@ public class Server5 {
                 SelectionKey selectionKey = serverSocketChannel.register(boss, 0, null);
                 selectionKey.interestOps(SelectionKey.OP_ACCEPT);
                 workers = initWorkerEventLoop();
-                new Thread(this,"boss").start();
+                new Thread(this, "boss").start();
                 log.debug("boss start...");
                 start = true;
             }
@@ -86,7 +86,7 @@ public class Server5 {
 
     static class WorkerEventLoop implements Runnable {
         private Selector worker;
-        private volatile boolean start =false;
+        private volatile boolean start = false;
         private int index;
 
         public WorkerEventLoop(int index) {
@@ -99,6 +99,8 @@ public class Server5 {
                 new Thread(this, "worker-" + index).start();
                 start = true;
             }
+            worker.wakeup();
+            socketChannel.register(worker, SelectionKey.OP_READ);
         }
 
         @Override
