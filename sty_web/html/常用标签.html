@@ -1,153 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <!-- 头标签 -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
 <!-- 主体标签 -->
+
 <body>
     <!-- 排版标签 start -->
-        <!-- 标题标签 -->
-        <h1>1级标题</h1>
-        <h2>2级标题</h2>
-        <h3>3级标题</h3>
-        <h4>4级标题</h4>
-        <h5>5级标题</h5>
-        <h6>6级标题</h6>
-        
-        <!-- 段落标签 -->
-        <p>段落标签</p>
+    <!-- 标题标签 -->
+    <h1>1级标题</h1>
+    <h2>2级标题</h2>
+    <h3>3级标题</h3>
+    <h4>4级标题</h4>
+    <h5>5级标题</h5>
+    <h6>6级标题</h6>
 
-        <!-- 换行标签 -->
-        <br>
+    <!-- 段落标签 -->
+    <p>段落标签</p>
 
-        <!-- 水平线标签 -->
-        <hr>
+    <!-- 换行标签 -->
+    <br>
+
+    <!-- 水平线标签 -->
+    <hr>
     <!-- 排版标签 end -->
 
 
     <!-- 文本格式化标签 start -->
-        <strong>加粗标签</strong>
+    <strong>加粗标签</strong>
 
-        <ins>下划线标签</ins>
+    <ins>下划线标签</ins>
 
-        <em>倾斜标签</em>
+    <em>倾斜标签</em>
 
-        <del>删除线标签</del>
+    <del>删除线标签</del>
     <!-- 文本格式化标签 end -->
 
     <hr>
 
     <!-- 媒体标签 start -->
-        <!-- 图片标签 -->
-        <img src="images/map.jpg" alt="图片加载失败显示" title="鼠标放到图片上显示" width="200" height="100">
-        <img src="images/map1.jpg" alt="图片加载失败显示">
+    <!-- 图片标签 -->
+    <img src="images/map.jpg" alt="图片加载失败显示" title="鼠标放到图片上显示" width="200" height="100">
+    <img src="images/map1.jpg" alt="图片加载失败显示">
 
-        <!-- 视频标签 -->
-         <!-- 
+    <!-- 视频标签 -->
+    <!-- 
             • src：视频路径
             • controls：视频控件
             • autoplay：自动播放
             • loop：循环播放 
         -->
-        <video src="images/video.mp4" controls autoplay loop></video>
+    <video src="images/video.mp4" controls autoplay loop></video>
 
-        <!-- 音频标签 -->
-        <!-- 
+    <!-- 音频标签 -->
+    <!-- 
             • src：音频路径
             • controls：音频控件
             • autoplay：自动播放
             • loop：循环播放 
         -->
-        <audio src="images/music.mp3" controls autoplay loop></audio>
+    <audio src="images/music.mp3" controls autoplay loop></audio>
 
     <!-- 媒体标签 end -->
 
     <hr>
 
     <!-- 超链接标签 start -->
-        <!-- 超链接标签 -->
-        <!-- 
+    <!-- 超链接标签 -->
+    <!-- 
             • href：链接地址
             • target：打开方式
                 _blank：新窗口打开
                 _self：当前窗口打开
          -->
-        <a href="https://www.baidu.com" target="_blank">百度一下</a>
+    <a href="https://www.baidu.com" target="_blank">百度一下</a>
 
-        <!-- 锚点标签 -->
-        <a href="#top">回到顶部</a>
+    <!-- 锚点标签 -->
+    <a href="#top">回到顶部</a>
 
-        <!-- 图片超链接 -->
-        <a href="https://www.baidu.com" target="_blank">
-            <img src="images/map.jpg" alt="图片加载失败显示" title="鼠标放到图片上显示" width="200" height="100">
-        </a>
+    <!-- 图片超链接 -->
+    <a href="https://www.baidu.com" target="_blank">
+        <img src="images/map.jpg" alt="图片加载失败显示" title="鼠标放到图片上显示" width="200" height="100">
+    </a>
 
     <!-- 超链接标签 end -->
 
     <hr>
 
     <!-- 列表标签 start -->
-        <!-- 无序列表 -->
-        <ul>
-            <li>无序列表项1</li>
-            <li>无序列表项2</li>
-        </ul>
+    <!-- 无序列表 -->
+    <ul>
+        <li>无序列表项1</li>
+        <li>无序列表项2</li>
+    </ul>
 
-        <!-- 有序列表 -->
-        <ol>
-            <li>有序列表项1</li>
-            <li>有序列表项2</li>
-        </ol>
+    <!-- 有序列表 -->
+    <ol>
+        <li>有序列表项1</li>
+        <li>有序列表项2</li>
+    </ol>
 
-        <!-- 自定义列表 -->
-        <dl>
-            <dt>自定义列表主题</dt>
-            <dd>自定义列表针对主题内容1</dd>
-            <dd>自定义列表针对主题内容2</dd>
-        </dl>
+    <!-- 自定义列表 -->
+    <dl>
+        <dt>自定义列表主题</dt>
+        <dd>自定义列表针对主题内容1</dd>
+        <dd>自定义列表针对主题内容2</dd>
+    </dl>
     <!-- 列表标签 end -->
 
     <hr>
 
     <!-- 表格标签 start -->
-        <table border="1" width="300" height="300">
-            <caption><strong>学生成绩单</strong></caption>
-            <thead>
-                <tr>
-                    <th>姓名</th>
-                    <th>成绩</th>
-                    <th>评价</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>张三</td>
-                    <td rowspan="3">100</td>
-                    <td>优秀</td>
-                </tr>
-                <tr>
-                    <td>李四</td>
-                    <td>优秀</td>
-                </tr>
-                <tr>
-                    <td>王二麻子</td>
-                    <td>良好</td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td>总结</td>
-                    <td colspan="2">哈哈</td>
-                
-                </tr>
-            </tfoot>
-           
-        </table>
+    <table border="1" width="300" height="300">
+        <caption><strong>学生成绩单</strong></caption>
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>成绩</th>
+                <th>评价</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>张三</td>
+                <td rowspan="3">100</td>
+                <td>优秀</td>
+            </tr>
+            <tr>
+                <td>李四</td>
+                <td>优秀</td>
+            </tr>
+            <tr>
+                <td>王二麻子</td>
+                <td>良好</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>总结</td>
+                <td colspan="2">哈哈</td>
+
+            </tr>
+        </tfoot>
+    </table>
 
     <!-- 表格标签 end -->
+
+    <hr>
+
+    <!-- 表单标签 start -->
+    <!-- form表单域 -->
+    <form action="">
+        <!-- input系列 -->
+        用户名：<input type="text" name="nickname">
+        密码：<input type="password" placeholder="请输入密码">
+        <br>
+        性别：<input type="radio" name="sex" checked>男
+        <input type="radio" name="sex">女
+        <br>
+        <input type="checkbox">
+        <br>
+        <!-- 只能选单个 -->
+        <input type="file">
+        <!-- 选多个文件 -->
+        <input type="file" multiple>
+        <br>
+        <input type="submit" value="注册">
+        <input type="reset">
+        <input type="button" value="普通按钮">
+    </form>
+
+    <br>
+    <!-- button系列 -->
+    <button>我是按钮</button>
+    <button type="submit">提交按钮</button>
+    <button type="reset">重置按钮</button>
+    <button type="button">普通按钮</button>
+
+    <br>
+
+    <!-- 下拉菜单 -->
+    <select>
+        <option>1</option>
+        <option selected>2</option>
+        <option>3</option>
+        <option>4</option>
+    </select>
+
+    <br>
+
+    <!-- 文本域 -->
+    <textarea rows="20" cols="30"></textarea>
+
+    <br>
+
+    <input type="radio" name="sex" id="nan"><label for="nan">男</label>
+    <label><input type="radio" name="sex">女</label>
+
+    <br>
+    <!-- 表单标签 end -->
+
+    <br>
+    
+    <!-- 语义标签 start -->
+    <div>div标签</div>
+    <div>div标签</div>
+    <span>span标签</span>
+    <span>span标签</span>
+
+
+    <div>
+        <header>网页头部</header>
+        <nav>网页导航</nav>
+        <footer>网页底部</footer>
+        <aside>网页侧边栏</aside>
+        <section>网页区块</section>
+        <article>网页文章</article>
+    </div>
+
+     <!-- 语义标签 end -->
 
 </body>
 
