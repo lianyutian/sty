@@ -9,13 +9,10 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.codec.FixedLengthFrameDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 粘包现象
@@ -29,10 +26,10 @@ import org.slf4j.LoggerFactory;
  * @createTime : [2023/6/15 20:34]
  */
 @Slf4j
-public class HelloServer {
+public class Resolve2Server {
 
     public static void main(String[] args) {
-        new HelloServer().start();
+        new Resolve2Server().start();
     }
 
     private void start() {
@@ -49,6 +46,7 @@ public class HelloServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
+                            ch.pipeline().addLast(new FixedLengthFrameDecoder(8));
                             ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                                 @Override
                                 public void channelActive(ChannelHandlerContext ctx) throws Exception {
