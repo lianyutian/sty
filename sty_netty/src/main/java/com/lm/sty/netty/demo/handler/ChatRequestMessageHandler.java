@@ -4,6 +4,7 @@ import com.lm.sty.netty.demo.message.ChatRequestMessage;
 import com.lm.sty.netty.demo.message.ChatResponseMessage;
 import com.lm.sty.netty.demo.server.session.SessionFactory;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -12,6 +13,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @version 1.0
  * @since 2023/7/6 17:13
  */
+@ChannelHandler.Sharable
 public class ChatRequestMessageHandler extends SimpleChannelInboundHandler<ChatRequestMessage> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ChatRequestMessage msg) throws Exception {
