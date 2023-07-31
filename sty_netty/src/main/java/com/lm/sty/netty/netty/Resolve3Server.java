@@ -37,7 +37,6 @@ public class Resolve3Server {
             ChannelFuture channelFuture = new ServerBootstrap()
                     .group(boss, worker)
                     .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_RCVBUF, 10)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {

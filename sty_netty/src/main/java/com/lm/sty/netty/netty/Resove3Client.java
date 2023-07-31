@@ -48,13 +48,14 @@ public class Resove3Client {
                                         byte length = (byte) (r.nextInt(16) + 1);
                                         // 先写入长度
                                         buffer.writeByte(length);
-                                        // 再
+                                        // 再写入内容
                                         for (int j = 1; j <= length; j++) {
                                             buffer.writeByte((byte) c);
                                         }
                                         c++;
+                                        ctx.writeAndFlush(buffer);
                                     }
-                                    ctx.writeAndFlush(buffer);
+
                                 }
                             });
                         }
