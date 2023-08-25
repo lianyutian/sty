@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    /* 错误的写法 */
+    li a:first-child {
+      /* color: red; */
+    }
+
+    /* 正确的写法 */
+    li:first-child a {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <ul>
+    <li><a href="#">我是第1个a标签</a></li>
+    <li><a href="#">我是第2个a标签</a></li>
+    <li><a href="#">我是第3个a标签</a></li>
+    <li><a href="#">我是第4个a标签</a></li>
+    <li><a href="#">我是第5个a标签</a></li>
+    <li><a href="#">我是第6个a标签</a></li>
+    <li><a href="#">我是第7个a标签</a></li>
+    <li><a href="#">我是第8个a标签</a></li>
+  </ul>
+</body>
+</html>

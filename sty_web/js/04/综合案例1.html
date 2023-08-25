@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    let person = {
+      name: 'pink',
+      age: 18,
+      gender: '男',
+      sayHi: function () {
+        document.write('hi')
+      }
+
+
+    }
+
+
+    for (let i in person) {
+      console.log(i);
+      console.log(person[i]);
+    }
+    person.sayHi()
+    person.name = '老王'
+    delete person.age
+    console.log(person.name)
+    console.log(person.age)
+
+    let product = {
+      'user-name': '来了',
+      user_name: 'gaga',
+      goods: '',
+      name: '',
+      num: '',
+      weight: '',
+      address: ''
+    }
+    product.goods = '小米10PLUS'
+    product.color = '粉色'
+    console.log(product.goods);
+    console.log(product.name);
+    console.log(product.goods);
+    console.log(product.gonumods);
+    console.log(product.weight);
+    console.log(product.address);
+    console.log(product.color);
+    console.log(product.user_name);
+    console.log(product.user - name); // NAN
+    console.log(product['user-name']);
+    let goods = 'gaga'
+    console.log(product[goods]);
+    console.log(product['goods']);
+  </script>
+</body>
+
+</html>

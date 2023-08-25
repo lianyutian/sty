@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    div {
+      /* 注意点：width和height属性默认设置的是内容区域的大小 */
+      width: 380px;
+      height: 380px;
+      background-color: green;
+      /* 注意点：border会把盒子撑大 */
+      border: 10px solid #000;
+
+      /* 
+      盒子的实际大小（宽度）=左边框+内容的宽度+右边框
+                        = 10+400+10
+                        = 420
+      解决：现在是420 ， 要求400 ，多出了20px
+      手动内减：计算出多余的部分之后，手动在内容中减去即可
+       */
+    }
+  </style>
+</head>
+<body>
+  <div></div>
+</body>
+</html>

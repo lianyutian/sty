@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    /* 1、找到第一个子元素，并且为li标签 */
+    li:first-child {
+      /* background-color: blue; */
+    }
+
+    /* 2、找到最后一个子元素，并且为li标签 */
+    li:last-child {
+      /* background-color: orange; */
+    }
+
+    /* 3、找到第3个子元素，并且为li标签 */
+    li:nth-child(3) {
+      /* background-color: pink; */
+    }
+
+    /* 4、找到倒数第3个子元素，并且为li标签 */
+    li:nth-child(8) {
+      /* background-color: green; */
+    }
+
+    li:nth-last-child(3) {
+      background-color: red;
+    }
+
+
+  </style>
+</head>
+<body>
+  <!-- ul>li{我是第$个li}*10 -->
+  
+  <ul>
+    <!-- <div>私生子</div> -->
+    <li>我是第1个li</li>
+    <li>我是第2个li</li>
+    <li>我是第3个li</li>
+    <li>我是第4个li</li>
+    <li>我是第5个li</li>
+    <li>我是第6个li</li>
+    <li>我是第7个li</li>
+    <li>我是第8个li</li>
+    <li>我是第9个li</li>
+    <li>我是第10个li</li>
+  </ul>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .father {
+      /* color: red;
+      font-size: 20px; */
+      width: 400px;
+      height: 400px;
+      background-color: skyblue;
+    }
+
+    .son {
+      /* width: 100px; */
+      height: 100px;
+      background-color: orange;
+    }
+  </style>
+</head>
+<body>
+  <div class="father">
+    <!-- 继承正常情况 -->
+    <!-- <div class="son">儿子</div> -->
+
+    <!-- 1、a标签的文字颜色会继承失效 -->
+    <!-- <a href="#">我是一个a标签</a> -->
+
+    <!-- 2、h系列标签的font-size会继承失效 -->
+    <!-- <h1>我是一个h1标签</h1> -->
+
+    <!-- 3、div标签的高度不能继承，但是宽度有类似于继承的效果 -->
+    <div class="son"></div>
+    
+  </div>
+</body>
+</html>

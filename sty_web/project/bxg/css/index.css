@@ -1,0 +1,187 @@
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+body,
+ul,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0;
+  margin: 0;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, PingFangSC-Regular, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  color: #333;
+}
+img {
+  vertical-align: bottom;
+}
+ul {
+  list-style-type: none;
+}
+a {
+  color: #333;
+  text-decoration: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+input {
+  border: none;
+  outline: none;
+  color: #333;
+}
+.wrapper {
+  width: 1190px;
+  margin: 0 auto;
+}
+.top {
+  height: 31px;
+  width: 100%;
+  background-color: #f7f7f7;
+}
+.top span {
+  line-height: 31px;
+}
+.top span:nth-child(1) {
+  margin-right: 15px;
+  padding-right: 15px;
+  border-right: 1px solid;
+  color: #999999;
+}
+.top span:nth-child(2) {
+  color: #333333;
+}
+.header {
+  display: flex;
+  height: 76px;
+  background-color: #ffffff;
+  line-height: 76px;
+}
+.header .logo {
+  flex: 1;
+  background-image: url(../images/logo.png);
+  background-repeat: no-repeat;
+  background-position: left center;
+}
+.header .logo a {
+  font-size: 0;
+}
+.header ul {
+  display: flex;
+}
+.header ul li {
+  padding-left: 20px;
+}
+.nav {
+  display: flex;
+}
+.nav .left {
+  width: 230px;
+  height: 42px;
+  background-color: #3492fd;
+  border-radius: 6px 6px 0 0;
+  text-align: center;
+  line-height: 42px;
+}
+.nav .left span {
+  font-size: 16px;
+}
+.nav .right {
+  flex: 1;
+}
+.nav .right ul {
+  display: flex;
+  line-height: 42px;
+}
+.nav .right ul li:nth-child(1) {
+  margin-left: 20px;
+}
+.nav .right ul li {
+  height: 42px;
+}
+.nav .right ul li a {
+  padding: 0 20px;
+}
+.nav .right ul li:hover {
+  background-color: skyblue;
+}
+.nav .search {
+  display: flex;
+  padding-left: 14px;
+  width: 240px;
+  height: 30px;
+  line-height: 28px;
+  border-radius: 30px;
+  border: 1px solid #eeeeee;
+}
+.nav .search span {
+  color: #cccccc;
+}
+.nav .search .icon-search {
+  margin-left: 20px;
+  font-size: 20px;
+}
+.banner {
+  height: 465px;
+  background-image: url(../images/web.jpg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: #f0f0f0;
+}
+.banner .wrapper {
+  display: flex;
+}
+.banner .wrapper .left {
+  width: 230px;
+  height: 465px;
+  background-color: #606060;
+}
+.banner .wrapper .left ul {
+  padding-top: 40px;
+}
+.banner .wrapper .left ul li {
+  display: flex;
+  height: 36px;
+  padding: 10px 40px;
+}
+.banner .wrapper .left ul li a {
+  flex: 1;
+  color: #fff;
+}
+.banner .wrapper .left ul li span {
+  color: #ffffff;
+}
+.banner .wrapper .left ul li:hover {
+  background-color: skyblue;
+}
+.banner .wrapper .right {
+  margin-top: 365px;
+  margin-left: 12px;
+  width: 952px;
+  height: 100px;
+}
+.banner .wrapper .right ul {
+  display: flex;
+  background-color: #fff;
+  border-radius: 10px;
+}
+.banner .wrapper .right ul li {
+  padding: 30px 0 0 30px;
+  width: 238px;
+  height: 100px;
+}
+.banner .wrapper .right ul li a {
+  display: flex;
+}
+.banner .wrapper .right ul li a div {
+  margin-left: 10px;
+}
+.banner .wrapper .right ul li a div p:nth-child(2) {
+  margin-top: 10px;
+}

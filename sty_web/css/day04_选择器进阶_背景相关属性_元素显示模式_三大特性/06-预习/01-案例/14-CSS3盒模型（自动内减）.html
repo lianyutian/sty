@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    div {
+      /* 如果设置了box-sizing：border-box，其实此时的width和height属性设置的就是盒子的实际大小 */
+      width: 300px;
+      height: 300px;
+      background-color: pink;
+      /* border会撑大盒子 */
+      border: 10px solid #000;
+      /* padding也会撑大盒子 */
+      padding: 20px;
+      /* 自动内减 */
+      box-sizing: border-box;
+
+      /* 
+        要求：300*300
+        现在：360*360
+        多出：60
+
+        解决1：手动内减
+        解决2：自动内减
+        只要设置一个属性，浏览器会自动计算多出了多少，自动在内容中减去
+
+          CSS3盒模型：
+          属性名：box-sizing
+          属性值：border-box
+       */
+    }
+  </style>
+</head>
+<body>
+  <div></div>
+</body>
+</html>

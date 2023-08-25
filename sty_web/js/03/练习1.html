@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    let sum = 0
+    for (let index = 1; index <= 100; index++) {
+      document.write(`<p>${index}</p>`)
+      if (index % 2 === 0) {
+        sum += index
+      }
+    }
+    document.write('sum: ', sum)
+
+    let arr = ['马超', '赵云', '张飞', '关羽', '黄忠']
+    for (let i = 0; i < arr.length; i++) {
+      document.write(arr[i])
+    }
+  </script>
+</body>
+
+</html>

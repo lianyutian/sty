@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    /* 去除浏览器默认的margin和padding */
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .box {
+      /* 转换成行内块元素 */
+      display: inline-block;
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+
+      /* 1、margin的取值 */
+      /* margin: 10px; */
+      /* margin: 10px 20px; */
+      /* margin: 10px 20px 30px; */
+      /* margin: 10px 20px 30px 40px; */
+
+      /* 2、margin的单方向 */
+      margin-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box"></div>
+</body>
+</html>

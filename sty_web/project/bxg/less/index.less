@@ -1,0 +1,201 @@
+// out: ../css/
+
+@import "./base.less";
+
+.wrapper {
+  width: 1190px;
+  margin: 0 auto;
+}
+
+.top {
+  height: 31px;
+  width: 100%;
+  background-color: #f7f7f7;
+
+  span {
+    line-height: 31px;
+  }
+
+  span:nth-child(1) {
+    margin-right: 15px;
+    padding-right: 15px;
+    border-right: 1px solid;
+    color: #999999;
+  }
+
+  span:nth-child(2) {
+    color: #333333;
+  }
+}
+
+.header {
+  display: flex;
+  height: 76px;
+  background-color: #ffffff;
+  line-height: 76px;
+
+  .logo {
+    flex: 1;
+    background-image: url(../images/logo.png);
+    background-repeat: no-repeat;
+    background-position: left center;
+
+    a {
+      font-size: 0;
+    }
+  }
+
+  ul {
+    display: flex;
+
+    li {
+      padding-left: 20px;
+    }
+
+  }
+}
+
+.nav {
+  display: flex;
+
+  .left {
+    width: 230px;
+    height: 42px;
+    background-color: #3492fd;
+    border-radius: 6px 6px 0 0;
+    text-align: center;
+    line-height: 42px;
+
+    span {
+      font-size: 16px;
+    }
+  }
+
+  .right {
+    flex: 1;
+
+    ul {
+      display: flex;
+      line-height: 42px;
+
+      li:nth-child(1) {
+        margin-left: 20px;
+      }
+
+      li {
+        height: 42px;
+
+        a {
+          padding: 0 20px;
+        }
+      }
+
+      li:hover {
+        background-color: skyblue;
+      }
+
+    }
+  }
+
+  .search {
+    display: flex;
+    padding-left: 14px;
+    width: 240px;
+    height: 30px;
+    line-height: 28px;
+    // background-color: pink;
+    border-radius: 30px;
+    border: 1px solid #eeeeee;
+
+    span {
+      color: #cccccc;
+    }
+
+    .icon-search {
+      margin-left: 20px;
+      font-size: 20px;
+    }
+  }
+
+
+}
+
+.banner {
+  height: 465px;
+  background-image: url(../images/web.jpg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: #f0f0f0;
+
+  .wrapper {
+    display: flex;
+
+    .left {
+      width: 230px;
+      height: 465px;
+      background-color: #606060;
+
+      ul {
+        padding-top: 40px;
+
+        li {
+          display: flex;
+          height: 36px;
+          padding: 10px 40px;
+          // background-color: pink;
+
+          a {
+            flex: 1;
+            color: #fff;
+          }
+
+          span {
+            color: #ffffff;
+          }
+        }
+
+        li:hover {
+          background-color: skyblue;
+        }
+      }
+    }
+
+    .right {
+      margin-top: 365px;
+      margin-left: 12px;
+      width: 952px;
+      height: 100px;
+
+      // background-color: pink;
+      ul {
+        display: flex;
+        background-color: #fff;
+        border-radius: 10px;
+
+        li {
+          padding: 30px 0 0 30px;
+          width: 238px;
+          height: 100px;
+
+          a {
+            display: flex;
+
+            div {
+              margin-left: 10px;
+
+              p:nth-child(2) {
+                margin-top: 10px;
+              }
+
+            }
+          }
+
+        }
+      }
+
+    }
+  }
+
+
+
+}

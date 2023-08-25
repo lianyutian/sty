@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .box {
+      width: 400px;
+      height: 400px;
+      background-color: skyblue;
+      font-size: 20px;
+      line-height: 40px;
+
+      /* 1、通过行高设置单行文本的垂直居中效果 */
+      line-height: 400px;
+
+      /* 2、在网页精准布局的时候，会设置行高为1取消上下的间距 */
+      /* line-height: 1; */
+
+      /* 2、可以让单行文本在盒子中垂直居中 */
+      /* line-height: 400px; */
+
+      /* 
+        font相关属性：
+          font:style weight size/line-height family
+       */
+      font: italic 700 20px/400px 楷体;
+      /* line-height: 400px; */
+    
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    老师真的帅<br>
+    老师真的是太帅了
+  </div>
+</body>
+</html>
